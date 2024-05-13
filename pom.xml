@@ -6,5 +6,6 @@
   <packaging>pom</packaging>
   <modules>
   	<module>jdbc-practices</module>
+  	<module>sql-practices</module>
   </modules>
 </project>
