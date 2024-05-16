@@ -38,7 +38,7 @@ where e.emp_no = t.emp_no and t.title = 'Technique Leader' and t.to_date != '999
 
 -- 문제6.
 -- 직원 이름(last_name) 중에서 S로 시작하는 직원들의 이름, 부서명, 직책을 조회하세요.
-select e.emp_no, d.dept_name, t.title
+select e.last_name, d.dept_name, t.title
 from employees e, departments d, dept_emp de, titles t
 where e.last_name like 'S%' and e.emp_no = de.emp_no and e.emp_no = t.emp_no and de.dept_no = d.dept_no;
 
@@ -47,7 +47,7 @@ where e.last_name like 'S%' and e.emp_no = de.emp_no and e.emp_no = t.emp_no and
 -- projection: 사번 이름(first_name) 급여 타이틀
 select e.emp_no, e.first_name, s.salary, t.title
 from employees e, salaries s, titles t
-where s.to_date = '9999-01-01' and e.emp_no = s.emp_no and e.emp_no = t.emp_no and title = 'Engineer' and s.salary >= 40000
+where s.to_date = '9999-01-01' and t.to_date = '9999-01-01' and e.emp_no = s.emp_no and e.emp_no = t.emp_no and title = 'Engineer' and s.salary >= 40000
 order by s.salary desc;
 
 -- 문제8.
