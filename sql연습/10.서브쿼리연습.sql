@@ -32,11 +32,102 @@ select a.emp_no, a.first_name
 from employees a, dept_emp b
 where a.emp_no = b.emp_no
 	and b.to_date = '9999-01-01'
-    and b.dept_no = (select b.dept_no
-					from employees a, dept_emp b
-					where a.emp_no = b.emp_no and b.to_date = '9999-01-01' and concat(a.first_name, ' ', a.last_name) = 'Fai Bale'
+    and b.dept_no = (
+		select b.dept_no
+		from employees a, dept_emp b
+		where a.emp_no = b.emp_no and b.to_date = '9999-01-01' and concat(a.first_name, ' ', a.last_name) = 'Fai Bale'
 );
 
 -- 3-1) 단일행 연산자: =, > , <, >=, <=, <>, !=
+-- 실습문제1: 현재 전체 사원의 평균 연봉보다 적은 급여를 받는 사원의 이름과 급여를 출력하세요.
+select avg(salary) from salaries where to_date = '9999-01-01';
+
+select a.first_name, b.salary
+from employees a, salaries b
+where a.emp_no = b.emp_no
+	and b.to_date = '9999-01-01'
+	and b.salary < (
+		select avg(salary) from salaries where to_date = '9999-01-01'
+	)
+order by b.salary desc;
+
+-- 실습문제2: 현재 직책별 평균급여 중에 가장 작은 직책의 직책이름과 그 평균급여를 출력해보세요.
+-- ver.유진
+select t.title, avg(s.salary)
+from titles t, salaries s
+where t.emp_no = s.emp_no
+	and t.to_date = '9999-01-01'
+    and s.to_date = '9999-01-01'
+group by t.title
+order by avg(s.salary) asc
+limit 1;
+
+-- ver.강사님
+-- 1) 직책별 평균 급여
+select a.title, avg(salary)
+from titles a, salaries b
+where a.emp_no = b.emp_no
+	and t.to_date = '9999-01-01'
+    and s.to_date = '9999-01-01'
+group by a.title;
+
+-- 2) 직책별 가장 적은 평균 급여: from절 subquery
+select min(avg_salary)
+from (
+	select a.title, avg(salary) as avg_salary
+	from titles a, salaries b
+	where a.emp_no = b.emp_no
+		and t.to_date = '9999-01-01'
+		and s.to_date = '9999-01-01'
+	group by a.title
+) a;
+
+-- 3) sol1: where절 subquery(=)
+select a.title, avg(salary)
+from titles a, salaries b
+where a.emp_no = b.emp_no
+	and t.to_date = '9999-01-01'
+    and s.to_date = '9999-01-01'
+group by a.title
+having avg(salary) = (
+	select min(avg_salary)
+	from (
+		select a.title, avg(salary) as avg_salary
+		from titles a, salaries b
+		where a.emp_no = b.emp_no
+			and t.to_date = '9999-01-01'
+			and s.to_date = '9999-01-01'
+		group by a.title
+	) a
+);
+
+-- 4) sol2: top-k(limit)
+select t.title, avg(s.salary)
+from titles t, salaries s
+where t.emp_no = s.emp_no
+	and t.to_date = '9999-01-01'
+    and s.to_date = '9999-01-01'
+group by t.title
+order by avg(s.salary) asc
+limit 0, 1;
 
 -- 3-2) 복수행 연산자: in, not in, 비교연산자any, 비교연산자all <all
+
+-- any 사용법
+-- 1. =any: in
+-- 2. >any >=any: 최소값
+-- 3. <any <=any: 최대값
+-- 4. <>any, !=any: not in
+
+-- all 사용법
+-- 1. =all: (x)
+-- 2. >all, >=all: 최대값
+-- 3. <all, <=all: 최소값
+-- 4. <>all, !=all
+
+-- 실습문제3: 현재 급여가 50000 이상인 직원의 이름과 급여를 출력하세요.
+-- sol1) join
+
+-- sol2) subquery: where(in)
+
+-- sol3) subquery: where(=any)
