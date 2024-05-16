@@ -127,7 +127,71 @@ limit 0, 1;
 
 -- 실습문제3: 현재 급여가 50000 이상인 직원의 이름과 급여를 출력하세요.
 -- sol1) join
+select a.first_name, b.salary
+from employees a, salaries b
+where a.emp_no = b.emp_no
+	and b.to_date = '9999-01-01'
+    and b.salary >= 50000
+order by b.salary asc;
 
 -- sol2) subquery: where(in)
+select emp_no, salary
+from salaries
+where to_date = '9999-01-01' and salary >= 50000;
+
+select a.first_name, b.salary
+from employees a, salaries b
+where a.emp_no = b.emp_no
+	and b.to_date = '9999-01-01'
+    and (a.emp_no, b.salary) in (
+		select emp_no, salary
+		from salaries
+		where to_date = '9999-01-01' and salary >= 50000
+)
+order by b.salary asc;
 
 -- sol3) subquery: where(=any)
+select emp_no, salary
+from salaries
+where to_date = '9999-01-01' and salary >= 50000;
+
+select a.first_name, b.salary
+from employees a, salaries b
+where a.emp_no = b.emp_no
+	and b.to_date = '9999-01-01'
+    and (a.emp_no, b.salary) =any (
+		select emp_no, salary
+		from salaries
+		where to_date = '9999-01-01' and salary >= 50000
+)
+order by b.salary asc;
+
+-- 실습문제4: 현재 각 부서별로 최고급여를 받고 있는 직원의 이름과 월급을 출력하세요.
+-- sol1) where절 subquery(in)
+-- ver.유진
+select de.emp_no, max(s.salary)
+from salaries s, dept_emp de
+where s.emp_no = de.emp_no and s.to_date = '9999-01-01' and de.to_date = '9999-01-01'
+group by de.dept_no;
+
+select d.dept_name, e.first_name, s.salary
+from departments d, dept_emp de, employees e, salaries s
+where d.dept_no = de.dept_no and de.emp_no = e.emp_no and e.emp_no = s.emp_no
+	and (de.dept_no, s.salary) in (
+		select de.dept_no, max(s.salary)
+		from salaries s, dept_emp de
+		where s.emp_no = de.emp_no and s.to_date = '9999-01-01' and de.to_date = '9999-01-01'
+		group by de.dept_no
+);
+
+-- sol2) from절 subquery & join
+select d.dept_name, e.first_name, s.salary
+from departments d, dept_emp de, employees e, salaries s, (
+	select de.dept_no, max(s.salary) as max_salary
+	from dept_emp de, salaries s
+    where de.emp_no = s.emp_no and de.to_date = '9999-01-01' and s.to_date = '9999-01-01'
+    group by de.dept_no) e
+where d.dept_no = de.dept_no and de.emp_no = e.emp_no and e.emp_no = s.emp_no
+	and de.dept_no = e.dept_no
+	and de.to_date = '9999-01-01' and s.to_date = '9999-01-01'
+    and s.salary = e.max_salary;
