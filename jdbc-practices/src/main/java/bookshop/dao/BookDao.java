@@ -8,9 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import bookshop.vo.AuthorVo;
-
-public class AuthorDao {
+public class BookDao {
 	
 	private Connection getConnection() throws SQLException {
 		Connection conn = null;
@@ -26,41 +24,17 @@ public class AuthorDao {
 		
 		return conn;
 	}
-	
-	public List<AuthorVo> findAll() {
-		List<AuthorVo> result = new ArrayList<>();
-		
-		try (
-				Connection conn = getConnection();
-				PreparedStatement pstmt = conn.prepareStatement("select no, name from author");
-				ResultSet rs = pstmt.executeQuery();
-		) {
-			while (rs.next()) {
-				Long no = rs.getLong(1);
-				String name = rs.getString(2);
-				
-				AuthorVo vo = new AuthorVo();
-				vo.setNo(no);
-				vo.setName(name);
-				
-				result.add(vo);
-			}
-		} catch (SQLException e) {
-			System.out.println("error: " + e);
-		}
-		
-		return result;
-	}
 
-	public int insert(AuthorVo vo) {
+	public int insert(BookVo vo) {
 		int result = 0;
 		
 		try (
 				Connection conn = getConnection();
-				PreparedStatement pstmt1 = conn.prepareStatement("insert into author(name) values(?)");
+				PreparedStatement pstmt1 = conn.prepareStatement("insert into book(title, author_no) values(?, ?)");
 				PreparedStatement pstmt2 = conn.prepareStatement("select last_insert_id() from dual");
 		) {
-			pstmt1.setString(1, vo.getName());
+			pstmt1.setString(1, vo.getTitle());
+			pstmt1.setLong(2, vo.getAuthorNo());
 			// result = 1 == pstmt.executeUpdate();
 			result = pstmt1.executeUpdate();
 			
@@ -73,18 +47,26 @@ public class AuthorDao {
 		
 		return result;
 	}
-
-	public void deleteByNo(Long no) {
-int result = 0;
+	
+	public List<BookVo> findAll() {
+		List<BookVo> result = new ArrayList<>();
 		
 		try (
 				Connection conn = getConnection();
-				PreparedStatement pstmt = conn.prepareStatement("delete from author where no = ?");
+				PreparedStatement pstmt1 = conn.prepareStatement("insert into book(title, authorNo) values(?, ?)");
+				PreparedStatement pstmt2 = conn.prepareStatement("select last_insert_id() from dual");
 		) {
-			pstmt.setLong(1, no);
-			result = pstmt.executeUpdate();
+			pstmt1.setString(1, vo.getTitle());
+			pstmt1.setLong(2, vo.getAuthorNo());
+			result = pstmt1.executeUpdate();
+			
+			ResultSet rs = pstmt2.executeQuery();
+			vo.setNo(rs.next() ? rs.getLong(1) : null);
+			rs.close();
 		} catch (SQLException e) {
 			System.out.println("error: " + e);
-		}		
+		}
+		
+		return result;
 	}
 }
