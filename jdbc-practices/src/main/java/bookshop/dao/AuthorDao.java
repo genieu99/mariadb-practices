@@ -75,7 +75,7 @@ public class AuthorDao {
 	}
 
 	public void deleteByNo(Long no) {
-int result = 0;
+		int result = 0;
 		
 		try (
 				Connection conn = getConnection();
