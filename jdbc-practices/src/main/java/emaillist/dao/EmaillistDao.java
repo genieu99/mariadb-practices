@@ -13,7 +13,7 @@ import emaillist.vo.EmaillistVo;
 public class EmaillistDao {
 
 	public boolean insert(EmaillistVo vo) {
-boolean result = false;
+		boolean result = false;
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
