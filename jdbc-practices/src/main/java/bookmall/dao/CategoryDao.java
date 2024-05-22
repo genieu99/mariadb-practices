@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bookmall.vo.CategoryVo;
-import bookmall.vo.UserVo;
 
 public class CategoryDao {
 	

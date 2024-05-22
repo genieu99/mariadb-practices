@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import bookmall.vo.CartVo;
 import bookmall.vo.OrderBookVo;
 import bookmall.vo.OrderVo;
 
@@ -65,8 +64,8 @@ public class OrderDao {
 		}
 	}
 
-	public OrderVo findByNoAndUserNo(long no, Long userNo) {
-		OrderVo orderVo = new OrderVo();
+	public OrderVo findByNoAndUserNo(Long no, Long userNo) {
+		OrderVo orderVo = null;
 		
 		try (
 				Connection conn = getConnection();
@@ -77,20 +76,23 @@ public class OrderDao {
 			
 			ResultSet rs = pstmt.executeQuery();
 			
-			Long orders_no = rs.getLong(1);
-			String number = rs.getString(2);
-			Long user_no = rs.getLong(3);
-			String status = rs.getString(4);
-			int payment = rs.getInt(5);
-			String shipping = rs.getString(6);
-			
-			orderVo.setNo(orders_no);
-			orderVo.setNumber(number);
-			orderVo.setUserNo(user_no);
-			orderVo.setStatus(status);
-			orderVo.setPayment(payment);
-			orderVo.setShipping(shipping);
-			
+			if (rs.next()) {				
+				Long orders_no = rs.getLong(1);
+				String number = rs.getString(2);
+				Long user_no = rs.getLong(3);
+				String status = rs.getString(4);
+				int payment = rs.getInt(5);
+				String shipping = rs.getString(6);
+				
+				orderVo = new OrderVo();
+				orderVo.setNo(orders_no);
+				orderVo.setNumber(number);
+				orderVo.setUserNo(user_no);
+				orderVo.setStatus(status);
+				orderVo.setPayment(payment);
+				orderVo.setShipping(shipping);
+			}
+			rs.close();
 		} catch (SQLException e) {
 			System.out.println("error: " + e);
 		}
@@ -106,7 +108,6 @@ public class OrderDao {
 				PreparedStatement pstmt = conn.prepareStatement("select orders_no, book_no, quantity, orders_book.price, title from orders_book, orders, book, user "
 																+ "where orders_book.orders_no = orders.no and orders_book.book_no = book.no and orders.user_no = user.no and "
 																+ "orders.no = ? and  user.no = ?");
-				
 		) {
 			pstmt.setLong(1, no);
 			pstmt.setLong(2, userNo);
@@ -128,6 +129,7 @@ public class OrderDao {
 				
 				result.add(orderBookVo);
 			}
+			rs.close();
 		} catch (SQLException e) {
 			System.out.println("error: " + e);
 		}

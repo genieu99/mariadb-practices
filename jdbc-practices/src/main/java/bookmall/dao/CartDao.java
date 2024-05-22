@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bookmall.vo.CartVo;
-import bookmall.vo.CategoryVo;
 
 public class CartDao {
 	
@@ -66,6 +65,7 @@ public class CartDao {
 				
 				result.add(cartVo);
 			}
+			rs.close();
 		} catch (SQLException e) {
 			System.out.println("error: " + e);
 		}
