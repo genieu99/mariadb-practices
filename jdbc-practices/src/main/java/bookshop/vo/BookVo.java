@@ -1,4 +1,4 @@
-package bookshop.dao;
+package bookshop.vo;
 
 public class BookVo {
 	private Long no;
