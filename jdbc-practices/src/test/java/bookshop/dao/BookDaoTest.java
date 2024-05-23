@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import bookshop.vo.AuthorVo;
+import bookshop.vo.BookVo;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class BookDaoTest {

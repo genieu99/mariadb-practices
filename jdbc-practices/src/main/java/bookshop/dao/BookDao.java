@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import bookshop.vo.BookVo;
+
 public class BookDao {
 	
 	private Connection getConnection() throws SQLException {
@@ -104,6 +106,21 @@ public class BookDao {
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println("error: " + e);
+		}
+		
+		return result;
+	}
+	
+	public int deleteAll() {
+		int result = 0;
+		
+		try (
+			Connection conn = getConnection();
+			PreparedStatement pstmt = conn.prepareStatement("delete from book");
+		) {
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("error:" + e);
 		}
 		
 		return result;

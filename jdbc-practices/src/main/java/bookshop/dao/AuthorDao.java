@@ -74,7 +74,7 @@ public class AuthorDao {
 		return result;
 	}
 
-	public void deleteByNo(Long no) {
+	public int deleteByNo(Long no) {
 		int result = 0;
 		
 		try (
@@ -85,6 +85,23 @@ public class AuthorDao {
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println("error: " + e);
-		}		
+		}
+		
+		return result;
+	}
+
+	public int deleteAll() {
+		int result = 0;
+		
+		try (
+			Connection conn = getConnection();
+			PreparedStatement pstmt = conn.prepareStatement("delete from author");
+		) {
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("error:" + e);
+		}
+		
+		return result;
 	}
 }
